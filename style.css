@@ -1,0 +1,1806 @@
+:root {
+  --chrome: #fffdf9;
+  --bg: #f6f3ec;
+  --text: #1b1b26;
+  /* 5.0:1 on --bg and 5.6:1 on --chrome (WCAG AA for small text). */
+  --muted: #66646f;
+  --line: #e8e3d8;
+  /* 3:1 against both --bg and --chrome, as non-text contrast requires. */
+  --field-border: #827f88;
+  --accent: #4338ca;
+  --brand: #4338ca;
+  --accent-text: #ffffff;
+  --glass: rgba(255, 253, 249, 0.92);
+  --float-bg: rgba(27, 27, 38, 0.82);
+  --page-shadow: 0 1px 2px rgba(44, 38, 28, 0.1), 0 8px 24px rgba(44, 38, 28, 0.08);
+  --bar-h: 56px;
+  --tabs-h: 52px;
+  /* Family colours: mark on tint, for file badges. */
+  --hwp: #1d5fd1;       --hwp-tint: #e3ecfb;
+  --sheet: #17803d;     --sheet-tint: #e0f2e6;
+  --word: #4338ca;      --word-tint: #e7e6fa;
+  --slide: #c2500f;     --slide-tint: #fbeadf;
+  --pdf: #c9272c;       --pdf-tint: #fae5e5;
+  --image: #b3227a;     --image-tint: #f9e4f1;
+  --text-mark: #57534e; --text-tint: #ece9e2;
+  --zip: #936b09;       --zip-tint: #f7eed4;
+  --web: #0e7490;       --web-tint: #dcf0f5;
+  --lock: #57534e;      --lock-tint: #ece9e2;
+  /* iPhone notch / home bar (0 everywhere else, including the Android app). */
+  --safe-top: env(safe-area-inset-top, 0px);
+  --safe-right: env(safe-area-inset-right, 0px);
+  --safe-bottom: env(safe-area-inset-bottom, 0px);
+  --safe-left: env(safe-area-inset-left, 0px);
+  color-scheme: light;
+}
+
+/* Set by theme.js: the phone's setting, or what the reader chose. */
+:root[data-theme="dark"] {
+  --chrome: #191a24;
+  --bg: #101118;
+  --text: #eeedf4;
+  --muted: #a3a2b1;
+  --line: #2b2c3a;
+  --field-border: #737385;
+  --accent: #a9abff;
+  --brand: #5148e0;
+  --glass: rgba(25, 26, 36, 0.92);
+  --float-bg: rgba(44, 45, 60, 0.86);
+  --page-shadow: 0 1px 2px rgba(0, 0, 0, 0.5), 0 10px 28px rgba(0, 0, 0, 0.35);
+  --hwp: #8db6ff;       --hwp-tint: #1c2b49;
+  --sheet: #76d69a;     --sheet-tint: #17352a;
+  --word: #b3b1ff;      --word-tint: #25244d;
+  --slide: #ffae7c;     --slide-tint: #40271a;
+  --pdf: #ff9c9c;       --pdf-tint: #43201f;
+  --image: #f59bd0;     --image-tint: #3f1f36;
+  --text-mark: #cfccc4; --text-tint: #2a2a31;
+  --zip: #e5c261;       --zip-tint: #3a3015;
+  --web: #6fd0e6;       --web-tint: #16343c;
+  --lock: #cfccc4;      --lock-tint: #2a2a31;
+  color-scheme: dark;
+}
+
+* { box-sizing: border-box; }
+
+html, body { margin: 0; }
+
+/* Stop iOS enlarging text on rotation; documents have a fixed layout. */
+html { -webkit-text-size-adjust: 100%; text-size-adjust: 100%; }
+
+body {
+  background: var(--bg);
+  color: var(--text);
+  transition: background-color 0.2s ease;
+  font-family: system-ui, -apple-system, "Noto Sans KR", "Malgun Gothic", sans-serif;
+  -webkit-tap-highlight-color: transparent;
+  min-height: 100vh;
+}
+
+/* The app's own text breaks between Korean words, not inside them. Document content keeps
+   its own rules. */
+.bar, .screen, .about, .busy, .toast, .update-bar, .sheet-note, .sheet-empty, .text-note {
+  word-break: keep-all;
+  overflow-wrap: anywhere;
+}
+
+/* Short paragraphs don't end with a single orphaned word. */
+.screen h2, .screen p, .row-text, .about-foot, .toast, .busy span { text-wrap: balance; }
+
+.nowrap { white-space: nowrap; }
+
+button { font: inherit; }
+
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  padding: 0;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+/* ---------- top bar ---------- */
+
+.bar {
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  height: calc(var(--bar-h) + var(--safe-top));
+  padding: var(--safe-top) max(6px, var(--safe-right)) 0 max(16px, var(--safe-left));
+  background: var(--chrome);
+  border-bottom: 1px solid var(--line);
+}
+
+@supports ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
+  .bar {
+    background: var(--glass);
+    -webkit-backdrop-filter: saturate(170%) blur(18px);
+    backdrop-filter: saturate(170%) blur(18px);
+  }
+}
+
+/* At home the page itself is the header. */
+html.at-home .bar {
+  background: transparent;
+  border-color: transparent;
+  -webkit-backdrop-filter: none;
+  backdrop-filter: none;
+}
+
+html.at-home #open-btn { display: none; }
+html.at-home #doc-name { font-size: 18px; font-weight: 800; letter-spacing: -0.02em; }
+
+#doc-badge { display: contents; }
+
+/* A document's name matters more than the theme button, which is also in 정보. */
+@media (max-width: 480px) {
+  html:not(.at-home) #theme-btn { display: none; }
+  html:not(.at-home) .open-btn span { display: none; }
+}
+
+.title { flex: 1; min-width: 0; margin-right: 4px; }
+
+#doc-name {
+  font-size: 15px;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+#doc-meta {
+  font-size: 12px;
+  color: var(--muted);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+#doc-meta:empty { display: none; }
+
+.open-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  height: 44px;
+  padding: 0 12px;
+  border: 0;
+  border-radius: 22px;
+  background: transparent;
+  color: var(--accent);
+  font-size: 15px;
+  font-weight: 600;
+}
+
+.open-btn:active { background: var(--word-tint); }
+
+/* ---------- file badges ---------- */
+
+.file-badge {
+  display: inline-grid;
+  place-items: center;
+  flex: none;
+  width: 44px;
+  height: 44px;
+  border-radius: 14px;
+  background: var(--tint);
+  color: var(--mark);
+}
+
+.file-badge.small { width: 32px; height: 32px; margin-right: 10px; border-radius: 10px; }
+.file-badge.small svg { width: 18px; height: 18px; }
+.file-badge.large { width: 64px; height: 64px; border-radius: 20px; }
+.file-badge.large svg { width: 30px; height: 30px; }
+
+.is-hwp { --mark: var(--hwp); --tint: var(--hwp-tint); }
+.is-sheet { --mark: var(--sheet); --tint: var(--sheet-tint); }
+.is-word { --mark: var(--word); --tint: var(--word-tint); }
+.is-slide { --mark: var(--slide); --tint: var(--slide-tint); }
+.is-pdf { --mark: var(--pdf); --tint: var(--pdf-tint); }
+.is-image { --mark: var(--image); --tint: var(--image-tint); }
+.is-text { --mark: var(--text-mark); --tint: var(--text-tint); }
+.is-zip { --mark: var(--zip); --tint: var(--zip-tint); }
+.is-web { --mark: var(--web); --tint: var(--web-tint); }
+.is-lock { --mark: var(--lock); --tint: var(--lock-tint); }
+
+.icon-btn {
+  display: inline-grid;
+  place-items: center;
+  flex: none;
+  width: 44px;
+  height: 44px;
+  border: 0;
+  border-radius: 22px;
+  background: transparent;
+  color: var(--muted);
+}
+
+.icon-btn:active { background: color-mix(in srgb, var(--text) 10%, transparent); }
+
+/* ---------- home / status screens ---------- */
+
+.screen {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  min-height: calc(100vh - var(--bar-h) - var(--safe-top));
+  min-height: calc(100dvh - var(--bar-h) - var(--safe-top));
+  padding: 32px max(24px, var(--safe-right)) calc(48px + var(--safe-bottom)) max(24px, var(--safe-left));
+  text-align: center;
+}
+
+.screen h1 { margin: 8px 0 0; font-size: 24px; }
+.screen h2 { margin: 4px 0 0; font-size: 19px; font-weight: 700; letter-spacing: -0.01em; outline: none; }
+.screen p { margin: 0; color: var(--muted); font-size: 15px; line-height: 1.55; max-width: 340px; }
+
+/* Each new screen settles in rather than popping. */
+.screen, .doc-pages { animation: settle 0.28s cubic-bezier(0.2, 0.7, 0.2, 1) both; }
+
+@keyframes settle {
+  from { opacity: 0; transform: translateY(6px); }
+  to { opacity: 1; transform: none; }
+}
+
+/* ---------- home ---------- */
+
+.screen.home {
+  justify-content: flex-start;
+  gap: 0;
+  width: 100%;
+  max-width: 440px;
+  margin-inline: auto;
+  padding-top: clamp(8px, 4vh, 40px);
+  padding-bottom: calc(20px + var(--safe-bottom));
+}
+
+.screen.home h1 {
+  margin: 26px 0 0;
+  font-size: clamp(30px, 9vw, 36px);
+  font-weight: 800;
+  line-height: 1.2;
+  letter-spacing: -0.035em;
+}
+
+.hero-sheets {
+  position: relative;
+  width: 196px;
+  height: 148px;
+  flex: none;
+}
+
+.sheet-card {
+  position: absolute;
+  left: 50%;
+  top: 8px;
+  width: 104px;
+  height: 132px;
+  margin-left: -52px;
+  padding: 20px 16px;
+  border-radius: 16px;
+  background: var(--chrome);
+  box-shadow: var(--page-shadow);
+  display: flex;
+  flex-direction: column;
+  gap: 9px;
+  animation: 0.7s cubic-bezier(0.2, 0.9, 0.25, 1.1) both;
+}
+
+.sheet-card i { display: block; height: 7px; border-radius: 4px; background: currentColor; opacity: 0.32; }
+.sheet-card i:last-child { width: 62%; }
+
+.sheet-card.back-left { color: var(--hwp); background: var(--hwp-tint); transform: translateX(-46px) rotate(-11deg); animation-name: fan-left; }
+.sheet-card.back-right { color: var(--slide); background: var(--slide-tint); transform: translateX(46px) rotate(10deg); animation-name: fan-right; }
+
+.sheet-card.front {
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  background: var(--brand);
+  box-shadow: 0 2px 4px rgba(45, 38, 130, 0.25), 0 16px 32px rgba(45, 38, 130, 0.28);
+}
+
+.sheet-card.front .app-icon { background: transparent; }
+.sheet-card.front svg { width: 62px; height: 62px; }
+
+@keyframes fan-left { from { transform: none; } }
+@keyframes fan-right { from { transform: none; } }
+
+.cta {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  width: 100%;
+  max-width: 320px;
+  min-height: 56px;
+  margin-top: 24px;
+  border-radius: 18px;
+  font-size: 17px;
+  box-shadow: 0 10px 22px rgba(67, 56, 202, 0.26);
+  transition: transform 0.12s ease;
+}
+
+.cta:active { transform: scale(0.98); }
+
+.format-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 14px 6px;
+  width: 100%;
+  max-width: 340px;
+  margin: 28px 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.format-grid li {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  min-width: 0;
+  color: var(--muted);
+  font-size: 12px;
+  font-weight: 500;
+}
+
+.in-app-note {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+  max-width: 340px;
+  margin-top: 22px;
+  padding: 12px 14px;
+  border-radius: 16px;
+  background: var(--chrome);
+  box-shadow: var(--page-shadow);
+  text-align: left;
+}
+
+.in-app-note p { flex: 1; font-size: 12.5px; line-height: 1.45; }
+
+.in-app-note a {
+  flex: none;
+  max-width: 96px;
+  padding: 9px 12px;
+  border-radius: 12px;
+  background: var(--word-tint);
+  color: var(--accent);
+  font-size: 13px;
+  font-weight: 700;
+  line-height: 1.3;
+  text-align: center;
+  text-decoration: none;
+}
+
+.privacy {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  margin-top: 26px !important;
+  font-size: 12.5px !important;
+}
+
+.privacy svg { flex: none; }
+
+/* Short phones: the illustration gives way so the formats still fit. */
+@media (max-height: 720px) {
+  .hero-sheets { height: 112px; }
+  .sheet-card { top: -8px; transform-origin: 50% 0; scale: 0.8; }
+  .screen.home h1 { margin-top: 16px; font-size: 28px; }
+  .cta { margin-top: 18px; }
+  .format-grid { margin-top: 20px; gap: 10px 6px; }
+  .privacy { margin-top: 18px !important; }
+}
+
+/* Landscape phones: keep the open button above the fold. */
+@media (max-height: 560px) {
+  .screen { justify-content: flex-start; gap: 8px; padding-top: 16px; }
+  .hero-sheets { display: none; }
+  .screen.home h1 { margin-top: 0; font-size: 24px; }
+  .screen.home h1 br { display: none; }
+  .cta { margin-top: 14px; }
+}
+
+@media (max-height: 560px) and (orientation: landscape) {
+  .screen.home { max-width: 640px; }
+  .format-grid { grid-template-columns: repeat(8, 1fr); max-width: 560px; margin-top: 16px; }
+}
+
+/* ---------- waiting and problems ---------- */
+
+.paper-skeleton {
+  display: flex;
+  flex-direction: column;
+  gap: 11px;
+  width: min(210px, 56vw);
+  aspect-ratio: 1 / 1.3;
+  padding: 26px 22px;
+  border-radius: 14px;
+  background: var(--chrome);
+  box-shadow: var(--page-shadow);
+}
+
+.paper-skeleton i {
+  display: block;
+  height: 9px;
+  border-radius: 5px;
+  background: linear-gradient(90deg, var(--line) 30%, var(--bg) 50%, var(--line) 70%);
+  background-size: 300% 100%;
+  animation: shimmer 1.3s linear infinite;
+}
+
+.paper-skeleton i:first-child { width: 54%; height: 13px; margin-bottom: 6px; }
+.paper-skeleton i:nth-child(4) { width: 82%; }
+.paper-skeleton i:last-child { width: 46%; }
+
+@keyframes shimmer {
+  from { background-position: 120% 0; }
+  to { background-position: -60% 0; }
+}
+
+.state-mark svg { width: 38px; height: 38px; }
+
+.state-mark {
+  display: grid;
+  place-items: center;
+  width: 64px;
+  height: 64px;
+  border-radius: 20px;
+  background: var(--slide-tint);
+  color: var(--slide);
+}
+
+.app-icon {
+  width: 72px;
+  height: 72px;
+  border-radius: 22px;
+  background: var(--brand);
+  display: grid;
+  place-items: center;
+}
+
+.primary,
+.secondary {
+  min-height: 50px;
+  min-width: 200px;
+  padding: 0 24px;
+  border-radius: 15px;
+  font-size: 16px;
+  font-weight: 600;
+}
+
+.primary {
+  border: 0;
+  /* Brand indigo in both themes keeps white text readable on dark backgrounds too. */
+  background: var(--brand);
+  color: var(--accent-text);
+}
+
+.secondary {
+  border: 1px solid var(--field-border);
+  background: transparent;
+  color: var(--text);
+}
+
+.primary:active { filter: brightness(0.9); }
+.secondary:active { background: color-mix(in srgb, var(--text) 6%, transparent); }
+.secondary:disabled { opacity: 0.6; }
+
+.actions {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-top: 8px;
+}
+
+.error-detail {
+  max-width: 340px;
+  font-size: 13px;
+  color: var(--muted);
+}
+
+.error-detail summary { min-height: 44px; display: flex; align-items: center; justify-content: center; cursor: pointer; }
+.error-detail p { font-size: 12px !important; word-break: break-all; }
+
+.text-btn {
+  min-height: 44px;
+  padding: 8px 12px;
+  border: 0;
+  background: transparent;
+  color: var(--muted);
+  font-size: 12.5px;
+  text-decoration: underline;
+  text-decoration-color: var(--line);
+  text-underline-offset: 4px;
+}
+
+.spinner {
+  flex: none;
+  width: 18px;
+  height: 18px;
+  border: 2.5px solid rgba(255, 255, 255, 0.28);
+  border-top-color: #fff;
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+}
+
+@keyframes spin { to { transform: rotate(360deg); } }
+
+.busy {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: calc(28px + var(--safe-bottom));
+  z-index: 8;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  width: max-content;
+  max-width: calc(100% - 48px);
+  margin-inline: auto;
+  padding: 11px 18px;
+  border-radius: 999px;
+  background: var(--float-bg);
+  color: #fff;
+  font-size: 14px;
+  -webkit-backdrop-filter: blur(14px);
+  backdrop-filter: blur(14px);
+  pointer-events: none;
+  animation: toast-in 0.2s ease-out;
+}
+
+.pw-form {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  width: 100%;
+  max-width: 300px;
+  margin-top: 8px;
+}
+
+.pw-form input {
+  height: 52px;
+  padding: 0 16px;
+  border: 1px solid var(--field-border);
+  border-radius: 15px;
+  background: var(--chrome);
+  color: var(--text);
+  font-size: 16px;
+}
+
+.pw-form input[aria-invalid="true"] { border-color: var(--pdf); }
+.screen p.pw-error { color: var(--pdf); }
+.pw-form input::placeholder { color: var(--muted); opacity: 1; }
+
+.pw-form .primary { min-width: 0; }
+
+/* ---------- floating bits: page counter, hint toast, update bar ---------- */
+
+/* Centred with auto margins (not left:50% + translate, which caps the width at half the screen). */
+.pager,
+.toast {
+  position: fixed;
+  left: 0;
+  right: 0;
+  z-index: 8;
+  width: max-content;
+  max-width: calc(100% - 48px);
+  margin-inline: auto;
+  border-radius: 999px;
+  background: var(--float-bg);
+  color: #fff;
+  -webkit-backdrop-filter: blur(14px);
+  backdrop-filter: blur(14px);
+  pointer-events: none;
+}
+
+.pager {
+  bottom: calc(16px + var(--safe-bottom));
+  padding: 6px 12px;
+  font-size: 13px;
+  font-variant-numeric: tabular-nums;
+}
+
+.toast {
+  bottom: calc(60px + var(--safe-bottom));
+  padding: 10px 16px;
+  border-radius: 18px;
+  font-size: 14px;
+  text-align: center;
+  animation: toast-in 0.2s ease-out;
+}
+
+@keyframes toast-in {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: none; }
+}
+
+/* Under the header, clear of the sheet tabs, page counter and hint at the bottom. */
+.update-bar {
+  position: fixed;
+  top: calc(var(--bar-h) + var(--safe-top) + 8px);
+  left: max(12px, var(--safe-left));
+  right: max(12px, var(--safe-right));
+  z-index: 20;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: 6px 6px 6px 16px;
+  border-radius: 14px;
+  background: var(--chrome);
+  border: 1px solid var(--line);
+  box-shadow: 0 6px 24px rgba(0, 0, 0, 0.18);
+  font-size: 14px;
+}
+
+.update-bar span { flex: 1; min-width: 0; }
+.update-bar small { display: block; margin-top: 2px; color: var(--muted); font-size: 12px; }
+
+.update-bar button {
+  flex: none;
+  min-height: 44px;
+  padding: 0 14px;
+  border: 0;
+  border-radius: 10px;
+  background: var(--brand);
+  color: #fff;
+  font-weight: 600;
+}
+
+.update-bar button.later {
+  background: transparent;
+  color: var(--muted);
+  font-weight: 500;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .toast, .busy, .screen, .doc-pages, .sheet-card, .paper-skeleton i { animation: none; }
+}
+
+/* ---------- 정보 (about) panel ---------- */
+
+html.about-open,
+html.about-open body { overflow: hidden; }
+
+.about {
+  position: fixed;
+  inset: 0;
+  z-index: 30;
+  display: flex;
+  flex-direction: column;
+  background: var(--bg);
+  animation: about-in 0.18s ease-out;
+}
+
+@keyframes about-in {
+  from { opacity: 0; transform: translateY(12px); }
+  to { opacity: 1; transform: none; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .about { animation: none; }
+}
+
+.about-bar {
+  flex: none;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  height: calc(var(--bar-h) + var(--safe-top));
+  padding: var(--safe-top) max(16px, var(--safe-right)) 0 max(4px, var(--safe-left));
+  background: var(--chrome);
+  border-bottom: 1px solid var(--line);
+}
+
+.about-bar .icon-btn { color: var(--text); }
+
+.about-title { margin: 0; font-size: 17px; font-weight: 600; }
+
+.about-body {
+  flex: 1;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  -webkit-overflow-scrolling: touch;
+  padding: 20px max(16px, var(--safe-right)) calc(32px + var(--safe-bottom)) max(16px, var(--safe-left));
+}
+
+.about-inner { max-width: 560px; margin: 0 auto; }
+
+.about-hero {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  padding: 4px 0 8px;
+  text-align: center;
+}
+
+.about-hero .app-icon { width: 64px; height: 64px; border-radius: 16px; }
+.about-hero p { margin: 0; color: var(--muted); font-size: 14px; }
+.about-hero .about-name { margin-top: 10px; color: var(--text); font-size: 22px; font-weight: 700; }
+
+.group-title {
+  margin: 24px 4px 8px;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--muted);
+}
+
+.group {
+  overflow: hidden;
+  background: var(--chrome);
+  border: 1px solid var(--line);
+  border-radius: 14px;
+}
+
+.group > * + * { border-top: 1px solid var(--line); }
+
+.row-static { padding: 14px 16px; }
+.row-title { font-size: 15px; font-weight: 600; }
+.row-text { margin: 6px 0 0; font-size: 14px; line-height: 1.6; color: var(--muted); }
+.row-static .secondary { width: 100%; min-width: 0; margin-top: 12px; font-size: 15px; }
+
+.segmented {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 3px;
+  margin-top: 12px;
+  padding: 3px;
+  border-radius: 14px;
+  background: var(--bg);
+}
+
+.segmented button {
+  min-height: 44px;
+  padding: 0 4px;
+  border: 0;
+  border-radius: 11px;
+  background: transparent;
+  color: var(--muted);
+  font-size: 14px;
+  font-weight: 600;
+  transition: background 0.15s ease, color 0.15s ease;
+}
+
+.segmented button[aria-pressed="true"] {
+  background: var(--brand);
+  color: var(--accent-text);
+}
+
+.group summary {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-height: 52px;
+  padding: 12px 16px;
+  font-size: 15px;
+  list-style: none;
+  cursor: pointer;
+}
+
+.group summary::-webkit-details-marker { display: none; }
+.group summary:active { background: color-mix(in srgb, var(--text) 6%, transparent); }
+
+.sum-main { flex: 1; min-width: 0; overflow-wrap: anywhere; }
+.sum-sub { display: block; margin-top: 2px; font-size: 12px; color: var(--muted); }
+
+.chev {
+  flex: none;
+  width: 16px;
+  height: 16px;
+  color: var(--muted);
+  transition: transform 0.15s;
+}
+
+details[open] > summary .chev { transform: rotate(90deg); }
+
+.badge {
+  flex: none;
+  max-width: 40%;
+  padding: 3px 8px;
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--accent) 14%, transparent);
+  color: var(--accent);
+  font-size: 11px;
+  font-weight: 600;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.row-body {
+  padding: 0 16px 16px;
+  font-size: 14px;
+  line-height: 1.6;
+  color: var(--muted);
+}
+
+.row-body p { margin: 0 0 8px; }
+.row-body ul { margin: 0 0 8px; padding-left: 18px; }
+
+/* License texts read as prose, not code: the regular font, reflowed paragraphs, and no inner
+   scroll box (on a phone those trap the swipe). */
+.license-text {
+  margin: 4px 0 0;
+  padding: 12px;
+  background: var(--bg);
+  border-radius: 10px;
+  color: var(--text);
+  font-size: 12px;
+  line-height: 1.6;
+  overflow-wrap: anywhere;
+}
+
+.license-text p { margin: 0 0 8px; }
+.license-text p:last-child { margin-bottom: 0; }
+.license-text.listing { white-space: pre-line; }
+
+/* Folds inside a row (the Rust license texts). */
+details.sub { margin: 0 0 6px; border: 1px solid var(--line); border-radius: 10px; }
+details.sub > summary {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 44px;
+  padding: 8px 12px;
+  color: var(--text);
+  font-size: 13px;
+  list-style: none;
+  cursor: pointer;
+}
+details.sub > summary::-webkit-details-marker { display: none; }
+details.sub[open] > summary .chev { transform: rotate(90deg); }
+details.sub > .license-text { margin: 0 8px 8px; }
+.row-body > .secondary { width: 100%; min-width: 0; margin-top: 8px; font-size: 15px; }
+
+.link-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  min-height: 44px;
+  color: var(--accent);
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.about-foot {
+  margin: 28px 0 0;
+  text-align: center;
+  font-size: 12px;
+  line-height: 1.7;
+  color: var(--muted);
+}
+
+/* ---------- paged documents (HWP, DOCX, PPTX) ---------- */
+
+.doc-pages {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  padding: 10px max(8px, var(--safe-right)) calc(56px + var(--safe-bottom)) max(8px, var(--safe-left));
+}
+
+.hwp-page,
+.pdf-page {
+  position: relative;
+  width: 100%;
+  background: #fff;
+  color: #1d1d1f;
+  border-radius: 3px;
+  overflow: hidden;
+  box-shadow: var(--page-shadow);
+}
+
+.hwp-page > svg {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+/* Clipped from the start: content is laid out at full size and scaled, and must never widen the
+   page, or the browser could zoom out to show it and leave the zoom wrong afterwards. */
+.pdf-page canvas {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+.pdf-link {
+  position: absolute;
+  padding: 0;
+  border: 0;
+  background: transparent;
+}
+
+.docx-host,
+.pptx-host { width: 100%; overflow: hidden; }
+
+/* In list mode pptx-preview boxes every slide into a one-slide-tall scroller; let the page scroll instead. */
+.pptx-host .pptx-preview-wrapper {
+  height: auto !important;
+  overflow: visible !important;
+  background: transparent !important;
+}
+
+.pptx-host .pptx-preview-slide-wrapper { box-shadow: var(--page-shadow); }
+
+/* A slide that couldn't be drawn: its words on a plain sheet, at the slides' 960px width. */
+.pptx-text-only {
+  margin: 0 0 10px;
+  padding: 32px 40px;
+  background: #fff;
+  color: #1d1d1f;
+  font-size: 24px;
+  line-height: 1.5;
+  box-shadow: var(--page-shadow);
+}
+
+.pptx-text-only p { margin: 0 0 8px; overflow-wrap: anywhere; }
+
+.pptx-text-only .note { margin-bottom: 20px; color: #636366; font-size: 18px; }
+
+/* ---------- text, pictures and archives ---------- */
+
+.text-sheet {
+  width: 100%;
+  max-width: 794px;
+  padding: 22px 20px;
+  border-radius: 14px;
+  background: var(--chrome);
+  color: var(--text);
+  box-shadow: var(--page-shadow);
+  font-size: 15px;
+  line-height: 1.6;
+}
+
+.text-sheet h2 { margin: 0 0 10px; font-size: 14px; color: var(--muted); }
+
+.text-sheet pre {
+  margin: 0;
+  font: inherit;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+  word-break: normal;
+  tab-size: 4;
+}
+
+.text-sheet.rich h3 { margin: 16px 0 8px; font-size: 18px; }
+.text-sheet.rich p { margin: 0 0 8px; overflow-wrap: anywhere; white-space: pre-wrap; }
+.text-sheet.rich ul { margin: 0 0 8px; padding-left: 22px; }
+.text-sheet.rich img { display: block; max-width: 100%; height: auto; margin: 8px 0; }
+.table-scroll { overflow-x: auto; margin: 0 0 10px; }
+.text-sheet.rich table { border-collapse: collapse; }
+.text-sheet.rich td { padding: 4px 8px; border: 1px solid var(--line); vertical-align: top; }
+.text-sheet.rich td p { margin: 0; }
+
+.text-note {
+  margin: 2px 0 0;
+  color: var(--muted);
+  font-size: 13px;
+  text-align: center;
+}
+
+.text-sheet .text-note { margin: 0 0 12px; color: var(--muted); text-align: left; }
+
+.image-view {
+  display: block;
+  max-width: 100%;
+  height: auto;
+  border-radius: 6px;
+  background: #fff;
+  box-shadow: var(--page-shadow);
+}
+
+.archive-list {
+  width: 100%;
+  max-width: 794px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  background: var(--chrome);
+  border-radius: 18px;
+  overflow: hidden;
+  box-shadow: var(--page-shadow);
+}
+
+.archive-list li + li { border-top: 1px solid var(--line); }
+
+.archive-list button {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+  min-height: 64px;
+  padding: 10px 14px;
+  border: 0;
+  background: transparent;
+  color: var(--text);
+  text-align: left;
+}
+
+.archive-list button:active { background: var(--bg); }
+
+.archive-text { flex: 1; min-width: 0; }
+.archive-name { display: block; font-size: 15px; font-weight: 600; overflow-wrap: anywhere; }
+.archive-meta { display: block; margin-top: 2px; color: var(--muted); font-size: 12px; overflow-wrap: anywhere; }
+
+.back-chip {
+  position: fixed;
+  top: calc(var(--bar-h) + var(--safe-top) + 8px);
+  left: max(10px, var(--safe-left));
+  z-index: 9;
+  height: 44px;
+  padding: 0 16px;
+  border: 0;
+  border-radius: 22px;
+  background: var(--chrome);
+  color: var(--accent);
+  font-size: 13px;
+  font-weight: 600;
+  box-shadow: var(--page-shadow);
+}
+
+html.in-archive .stage { padding-top: 56px; }
+html.in-archive .sheet-wrap { top: calc(var(--bar-h) + var(--safe-top) + 60px); }
+
+/* ---------- spreadsheets ---------- */
+
+/* The sheet scrolls in its own box so a wide table never makes the page itself scroll sideways
+   (which would push the fixed tab strip out of view). */
+.sheet-wrap {
+  position: fixed;
+  top: calc(var(--bar-h) + var(--safe-top));
+  left: var(--safe-left);
+  right: var(--safe-right);
+  bottom: calc(var(--tabs-h) + var(--safe-bottom));
+  overflow: auto;
+  overscroll-behavior: contain;
+  padding-bottom: 68px;
+}
+
+.sheet-wrap.no-tabs { bottom: 0; padding-bottom: calc(68px + var(--safe-bottom)); }
+
+/* The sheet handles two fingers itself; see sheetZoom. */
+.sheet-wrap { touch-action: pan-x pan-y; }
+
+.sheet-zoom {
+  position: fixed;
+  right: max(12px, var(--safe-right));
+  bottom: calc(var(--tabs-h) + var(--safe-bottom) + 12px);
+  z-index: 9;
+  display: flex;
+  align-items: center;
+  border-radius: 999px;
+  background: var(--float-bg);
+  -webkit-backdrop-filter: blur(14px);
+  backdrop-filter: blur(14px);
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.2);
+}
+
+.sheet-zoom[hidden] { display: none; }
+.sheet-zoom.no-tabs { bottom: calc(var(--safe-bottom) + 14px); }
+
+.sheet-zoom button {
+  min-width: 44px;
+  height: 44px;
+  padding: 0 4px;
+  border: 0;
+  background: transparent;
+  color: #fff;
+  font-size: 20px;
+  line-height: 1;
+}
+
+.sheet-zoom .zoom-value {
+  min-width: 56px;
+  font-size: 13px;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+}
+
+table.sheet {
+  border-collapse: separate;
+  border-spacing: 0;
+  table-layout: fixed;
+  background: #fff;
+  color: #1d1d1f;
+  font-size: 13px;
+}
+
+table.sheet td,
+table.sheet th {
+  border-right: calc(1px / var(--sheet-zoom, 1)) solid #e2e2e2;
+  border-bottom: calc(1px / var(--sheet-zoom, 1)) solid #e2e2e2;
+  padding: 3px 6px;
+  height: 24px;
+  vertical-align: bottom;
+  white-space: pre;
+  line-height: 1.35;
+}
+
+table.sheet td.c { overflow: hidden; }
+table.sheet td.w { white-space: pre-wrap; overflow-wrap: anywhere; }
+table.sheet td.n { text-align: right; font-variant-numeric: tabular-nums; white-space: nowrap; }
+
+table.sheet td.pad {
+  padding: 0;
+  border-right: 0;
+  background: repeating-linear-gradient(to right, transparent 0 calc(100px - 1px / var(--sheet-zoom, 1)), #e2e2e2 0 100px);
+}
+
+table.sheet thead th {
+  position: sticky;
+  top: 0;
+  z-index: 4;
+  background: #f3f3f5;
+  color: #636366;
+  font-weight: 500;
+  text-align: center;
+  font-size: 12px;
+}
+
+table.sheet tbody th {
+  position: sticky;
+  left: 0;
+  z-index: 2;
+  background: #f3f3f5;
+  color: #636366;
+  font-weight: 500;
+  font-size: 12px;
+  text-align: center;
+}
+
+table.sheet thead th.corner { left: 0; z-index: 6; }
+
+/* iPhones only send taps on plain elements to a listener further up when they look clickable. */
+table.sheet th[scope] { cursor: pointer; -webkit-user-select: none; user-select: none; }
+table.sheet th.pad { cursor: default; }
+
+/* The column or row being stretched, and the handle that stretches it. The handle stays one size
+   on screen however far the sheet is zoomed, and reaches past the slim header for a fingertip. */
+table.sheet col.sel,
+table.sheet tr.sel td { background: rgba(23, 128, 61, 0.08); }
+table.sheet th.sel { background: #cfe9d8; color: #17803d; font-weight: 600; }
+table.sheet thead th.sel { z-index: 5; }
+table.sheet tbody th.sel { z-index: 3; }
+
+.sheet-grip {
+  position: absolute;
+  display: grid;
+  place-items: center;
+  width: calc(44px / var(--sheet-zoom, 1));
+  height: calc(44px / var(--sheet-zoom, 1));
+  touch-action: none;
+}
+
+thead .sheet-grip { top: 0; right: 0; transform: translateX(50%); cursor: col-resize; }
+tbody .sheet-grip { bottom: 0; left: 0; transform: translateY(50%); cursor: row-resize; }
+
+.sheet-grip::after {
+  content: '';
+  border-radius: 999px;
+  background: #17803d;
+  box-shadow: 0 0 0 calc(2px / var(--sheet-zoom, 1)) #fff;
+}
+
+thead .sheet-grip::after { width: calc(10px / var(--sheet-zoom, 1)); height: calc(26px / var(--sheet-zoom, 1)); }
+tbody .sheet-grip::after { width: calc(26px / var(--sheet-zoom, 1)); height: calc(10px / var(--sheet-zoom, 1)); }
+
+/* ---------- web pages (HTML) ---------- */
+
+/* In the page's flow like every other format, so the phone's own pinch zoom works over it. */
+.html-host {
+  position: relative;
+  width: 100%;
+  overflow: hidden;
+  background: #fff;
+}
+
+.html-frame {
+  display: block;
+  position: absolute;
+  top: 0;
+  left: 0;
+  border: 0;
+  background: #fff;
+  color-scheme: light;
+  transform-origin: 0 0;
+}
+
+/* Pictures, text boxes and charts sit over the cells, under the sticky row and column headers. */
+.sheet-canvas { position: relative; width: max-content; min-width: 100%; }
+
+.sheet-drawing {
+  position: absolute;
+  z-index: 0;
+  color: #1d1d1f;
+  font-size: 13px;
+  line-height: 1.4;
+}
+
+.sheet-drawing img { display: block; width: 100%; height: auto; }
+
+.sheet-drawing.has-text {
+  padding: 6px 8px;
+  background: #fff;
+  border: 1px solid #c8c8cc;
+}
+
+.sheet-drawing p { margin: 0; overflow-wrap: anywhere; white-space: pre-wrap; }
+
+.sheet-note,
+.sheet-empty {
+  margin: 12px 16px;
+  color: var(--muted);
+  font-size: 13px;
+}
+
+.sheet-tabs {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 10;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  height: calc(var(--tabs-h) + var(--safe-bottom));
+  padding: 4px max(8px, var(--safe-right)) calc(4px + var(--safe-bottom)) max(8px, var(--safe-left));
+  overflow-x: auto;
+  background: var(--chrome);
+  border-top: 1px solid var(--line);
+  scrollbar-width: none;
+}
+
+.sheet-tabs[hidden] { display: none; }
+
+.sheet-tabs button {
+  flex: none;
+  max-width: 180px;
+  height: 44px;
+  padding: 0 14px;
+  border: 0;
+  border-radius: 8px;
+  background: transparent;
+  color: var(--muted);
+  font-size: 14px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.sheet-tabs button[aria-current="true"] {
+  background: color-mix(in srgb, var(--accent) 14%, transparent);
+  color: var(--accent);
+  font-weight: 600;
+}
+
+/* ---------- 페이지 정리 ---------- */
+
+.tool-chip {
+  position: fixed;
+  right: max(12px, var(--safe-right));
+  bottom: calc(12px + var(--safe-bottom));
+  z-index: 9;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  height: 44px;
+  padding: 0 16px 0 12px;
+  border: 0;
+  border-radius: 22px;
+  background: var(--float-bg);
+  color: #fff;
+  font-size: 13px;
+  font-weight: 600;
+  -webkit-backdrop-filter: blur(14px);
+  backdrop-filter: blur(14px);
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.2);
+}
+
+.tool-chip svg { width: 18px; height: 18px; }
+
+.tools-bar { gap: 4px; }
+.tools-heading { flex: 1; min-width: 0; }
+.tools-heading h2 { line-height: 1.2; }
+.tools-count { margin: 0; color: var(--muted); font-size: 12px; font-variant-numeric: tabular-nums; }
+.tools-bar .text-btn { flex: none; margin: 0; }
+.tools-bar .text-btn:disabled { opacity: 0.4; }
+
+.tools-body {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+}
+
+.page-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+  gap: 14px 12px;
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 14px max(14px, var(--safe-right)) 20px max(14px, var(--safe-left));
+}
+
+/* touch-action stays pan-y: a long press starts a drag, and until then a swipe has to scroll.
+   Cards fill their grid cell, so a finger over the gap beside a short page still counts as on it,
+   and sit at its bottom, so page numbers stay in line whatever the shape of the pages. */
+.page-card {
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  width: 100%;
+  height: 100%;
+  padding: 0;
+  border: 0;
+  background: none;
+  color: inherit;
+  touch-action: pan-y;
+  -webkit-touch-callout: none;
+  -webkit-user-select: none;
+  user-select: none;
+}
+
+.page-card.dragging { opacity: 0.25; }
+.page-frame { position: relative; display: block; }
+
+.page-thumb {
+  display: grid;
+  place-items: center;
+  overflow: hidden;
+  aspect-ratio: 1 / 1.414;
+  border-radius: 6px;
+  background: #fff;
+  color: #636366;
+  font-size: 11px;
+  box-shadow: var(--page-shadow);
+}
+
+.page-thumb canvas,
+.page-ghost canvas { display: block; width: 100%; height: 100%; }
+
+.page-no {
+  display: block;
+  margin-top: 6px;
+  color: var(--muted);
+  font-size: 12px;
+  font-variant-numeric: tabular-nums;
+  text-align: center;
+}
+
+.page-check {
+  position: absolute;
+  top: 6px;
+  right: 6px;
+  display: grid;
+  place-items: center;
+  width: 22px;
+  height: 22px;
+  border: 1.5px solid #8e8e93;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.85);
+  color: transparent;
+}
+
+.page-check svg { width: 14px; height: 14px; }
+.page-card[aria-pressed="true"] .page-thumb { outline: 3px solid var(--brand); outline-offset: 1px; }
+.page-card[aria-pressed="true"] .page-check { border-color: #fff; background: var(--brand); color: #fff; }
+.page-card[aria-pressed="true"] .page-no { color: var(--accent); font-weight: 700; }
+
+.page-ghost {
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 3;
+  overflow: hidden;
+  border-radius: 6px;
+  background: #fff;
+  box-shadow: 0 12px 28px rgba(0, 0, 0, 0.35);
+  pointer-events: none;
+}
+
+.tools-foot {
+  display: flex;
+  gap: 4px;
+  padding: 6px max(8px, var(--safe-right)) calc(6px + var(--safe-bottom)) max(8px, var(--safe-left));
+  border-top: 1px solid var(--line);
+  background: var(--chrome);
+}
+
+.tool-btn {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 3px;
+  min-width: 0;
+  min-height: 54px;
+  padding: 4px 2px;
+  border: 0;
+  border-radius: 12px;
+  background: none;
+  color: var(--text);
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.tool-btn:active { background: color-mix(in srgb, var(--text) 8%, transparent); }
+.tool-btn.main { background: var(--brand); color: var(--accent-text); }
+.tool-btn.main:active { filter: brightness(0.9); }
+
+.tools .toast { bottom: calc(82px + var(--safe-bottom)); z-index: 4; }
+.tools-busy { bottom: calc(90px + var(--safe-bottom)); z-index: 6; }
+
+.result-backdrop {
+  position: absolute;
+  inset: 0;
+  z-index: 5;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  background: rgba(0, 0, 0, 0.42);
+}
+
+.result-backdrop.at-top { align-items: flex-start; }
+.result-backdrop.at-top .result-sheet {
+  padding-top: calc(20px + var(--safe-top));
+  border-radius: 0 0 20px 20px;
+}
+
+.result-sheet {
+  outline: none;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  width: 100%;
+  max-width: 480px;
+  max-height: 100%;
+  overflow-y: auto;
+  padding: 22px max(20px, var(--safe-right)) calc(14px + var(--safe-bottom)) max(20px, var(--safe-left));
+  border-radius: 20px 20px 0 0;
+  background: var(--chrome);
+  color: var(--text);
+  animation: toast-in 0.2s ease-out;
+}
+
+.result-sheet h3 { margin: 0; font-size: 18px; }
+.result-sheet p { margin: 0; }
+.result-name { font-size: 15px; font-weight: 600; overflow-wrap: anywhere; }
+.result-detail, .result-note, .result-status { color: var(--muted); font-size: 13px; line-height: 1.5; }
+.result-status:empty, .split-error:empty { display: none; }
+.result-status { color: var(--accent); }
+.result-sheet .primary,
+.result-sheet .secondary {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  min-width: 0;
+  width: 100%;
+}
+.result-sheet .text-btn { align-self: center; }
+
+.split-form { display: flex; align-items: flex-end; gap: 8px; }
+.split-form label { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 6px; font-size: 13px; font-weight: 600; }
+.split-form input {
+  width: 100%;
+  min-height: 46px;
+  padding: 0 12px;
+  border: 1px solid var(--field-border);
+  border-radius: 12px;
+  background: var(--bg);
+  color: var(--text);
+  font: inherit;
+  font-size: 16px;
+}
+.split-form input::placeholder { color: var(--muted); opacity: 1; }
+.split-form .primary,
+.split-form .secondary { flex: none; width: 92px; min-height: 46px; padding: 0 8px; font-size: 15px; }
+.split-error { color: var(--pdf); font-size: 13px; }
+
+/* ---------- 문서 스캔 ---------- */
+
+.scan-cta {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  width: 100%;
+  max-width: 320px;
+  min-height: 48px;
+  margin-top: 10px;
+}
+
+.scan-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  max-width: 340px;
+  margin: 0 auto;
+  padding: 12vh 24px 24px;
+  text-align: center;
+}
+
+.scan-empty[hidden],
+.tools-foot[hidden],
+.page-grid[hidden] { display: none; }
+
+.scan-empty h3 { margin: 4px 0 0; font-size: 19px; }
+.scan-empty p { margin: 0 0 8px; color: var(--muted); font-size: 14px; }
+.scan-empty .primary,
+.scan-empty .secondary {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  width: 100%;
+}
+
+/* Photos read best on black, in either theme. */
+.scan-editor {
+  --text: #f4f4f6;
+  --line: #2c2c34;
+  --chrome: #18181d;
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  display: flex;
+  flex-direction: column;
+  background: #000;
+  color: var(--text);
+}
+
+.scan-bar {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: var(--safe-top) max(4px, var(--safe-right)) 0 max(4px, var(--safe-left));
+  background: var(--chrome);
+}
+
+.scan-bar h3 { margin: 0; font-size: 16px; font-weight: 600; }
+.scan-bar .icon-btn { color: var(--text); }
+
+.scan-stage {
+  position: relative;
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  padding: 26px;
+}
+
+.scan-photo { position: relative; flex: none; touch-action: none; }
+.scan-photo > canvas { display: block; width: 100%; height: 100%; }
+.scan-quad { position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; }
+.scan-shade { fill: rgba(0, 0, 0, 0.5); }
+.scan-edge { fill: none; stroke: #7c8cff; stroke-width: 2; vector-effect: non-scaling-stroke; }
+
+.scan-handle {
+  position: absolute;
+  display: grid;
+  place-items: center;
+  width: 48px;
+  height: 48px;
+  margin: -24px 0 0 -24px;
+  padding: 0;
+  border: 0;
+  background: none;
+  touch-action: none;
+}
+
+.scan-handle i {
+  width: 20px;
+  height: 20px;
+  border: 3px solid #fff;
+  border-radius: 50%;
+  background: rgba(67, 56, 202, 0.75);
+  box-shadow: 0 1px 6px rgba(0, 0, 0, 0.6);
+}
+
+.scan-loupe {
+  position: absolute;
+  top: 12px;
+  left: 12px;
+  width: 112px;
+  height: 112px;
+  border: 2px solid #fff;
+  border-radius: 50%;
+  background:
+    linear-gradient(#7c8cff, #7c8cff) center / 100% 1px no-repeat,
+    linear-gradient(#7c8cff, #7c8cff) center / 1px 100% no-repeat;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.5);
+  pointer-events: none;
+}
+
+.scan-loupe.on-right { left: auto; right: 12px; }
+.scan-loupe[hidden] { display: none; }
+
+.scan-preview { display: flex; align-items: center; justify-content: center; width: 100%; height: 100%; }
+.scan-preview canvas { display: block; max-width: 100%; max-height: 100%; }
+
+.scan-filters {
+  display: flex;
+  justify-content: center;
+  gap: 8px;
+  padding: 10px 12px;
+  background: var(--chrome);
+}
+
+.scan-filters button {
+  min-width: 84px;
+  min-height: 40px;
+  padding: 0 14px;
+  border: 1px solid #55555f;
+  border-radius: 20px;
+  background: none;
+  color: var(--text);
+  font-size: 14px;
+}
+
+.scan-filters button[aria-pressed="true"] { border-color: #fff; background: #fff; color: #18181d; font-weight: 700; }
+
+/* ---------- PDF로 저장 ---------- */
+
+.tool-chip.beside-sheet-zoom { right: auto; left: max(12px, var(--safe-left)); bottom: calc(var(--safe-bottom) + 14px); }
+.tool-chip.beside-sheet-zoom.above-tabs { bottom: calc(var(--tabs-h) + var(--safe-bottom) + 12px); }
+
+.print-guide {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  max-width: 460px;
+  margin: 0 auto;
+  padding: 24px max(20px, var(--safe-right)) 24px max(20px, var(--safe-left));
+}
+
+.print-guide p { margin: 0; }
+.print-steps { margin: 0; padding-left: 22px; font-size: 15px; line-height: 1.7; }
+
+/* A copy of a page, at full size and scaled down. Only to look at: it holds real links. */
+/* pointer-events: a browser would otherwise start dragging the picture itself. */
+.page-thumb > img { display: block; width: 100%; height: 100%; pointer-events: none; }
+.page-ghost > img { display: block; width: 100%; height: 100%; }
+.thumb-clone {
+  justify-self: start;
+  align-self: start;
+  transform: scale(var(--thumb-scale, 1));
+  transform-origin: 0 0;
+  pointer-events: none;
+}
+.tool-btn:disabled { opacity: 0.5; }
+
+/* Measured on screen behind the panel, shown only on paper. */
+.sheet-paper { position: absolute; top: 0; left: 0; width: max-content; visibility: hidden; pointer-events: none; }
+.sheet-paper h2 { margin: 0 0 8px; font-size: 14px; color: #1d1d1f; }
+
+/* Laid out at full size for the paper; on screen the panel covers it. */
+.print-flow { height: auto !important; overflow: visible !important; }
+
+@media print {
+  html,
+  body,
+  html.about-open,
+  html.about-open body {
+    width: auto !important;
+    height: auto !important;
+    min-height: 0 !important; /* a screen's worth of height would spill onto a blank sheet */
+    overflow: visible !important;
+    background: #fff !important;
+    color: #000;
+    /* Slide backgrounds and table shading are the document's, not decoration. */
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+
+  body > :not(#view),
+  .sr-only,
+  .sheet-wrap,
+  .sheet-tabs,
+  .sheet-zoom { display: none !important; }
+
+  #view,
+  .stage,
+  .doc-pages {
+    display: block !important;
+    width: auto !important;
+    max-width: none !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    background: none !important;
+    animation: none !important;
+  }
+
+  /* One sheet of paper a page. The pixel short keeps rounding from spilling onto a blank sheet. */
+  .hwp-page {
+    width: var(--paper-width) !important;
+    max-width: none !important;
+    height: calc(var(--paper-height) - 1px) !important;
+    aspect-ratio: auto !important;
+    margin: 0 !important;
+    border-radius: 0 !important;
+    box-shadow: none !important;
+    break-inside: avoid;
+    break-after: page;
+  }
+
+  .hwp-page:last-child { break-after: auto; }
+
+  .docx-host,
+  .pptx-host { width: auto !important; }
+
+  .pptx-host .pptx-preview-wrapper > * {
+    margin: 0 !important;
+    box-shadow: none !important;
+    break-inside: avoid;
+    break-after: page;
+  }
+
+  .pptx-host .pptx-preview-wrapper > :last-child { break-after: auto; }
+
+  .text-sheet {
+    max-width: none !important;
+    padding: 0 !important;
+    border-radius: 0 !important;
+    background: none !important;
+    color: #000 !important;
+    box-shadow: none !important;
+  }
+
+  .text-sheet + .text-sheet { break-before: page; }
+  .text-note { display: none !important; }
+  .image-view { display: block; max-width: 100%; max-height: 100vh; margin: 0 auto; box-shadow: none; }
+
+  .sheet-paper { position: static; width: auto; visibility: visible; }
+  .sheet-paper section + section { break-before: page; }
+  .sheet-paper table.sheet tr { break-inside: avoid; }
+}
+
+/* The frame that prints itself. Under the panel on screen; if a browser prints the app's page
+   instead of the frame, it's what's left on the paper. */
+.html-paper { position: absolute; top: 0; left: 0; width: 718px; height: 1040px; border: 0; background: #fff; }
+
+.text-thumb { width: 794px; }
+.text-thumb .text-sheet { max-width: none; border-radius: 0; box-shadow: none; }
+
+.sheet-thumb {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  width: 100%;
+  height: 100%;
+  padding: 8px;
+  color: #17803d;
+  font-size: 13px;
+  font-weight: 600;
+  text-align: center;
+  overflow-wrap: anywhere;
+}
+
+@media print {
+  .html-host { display: none !important; }
+  .html-paper { position: static; width: 100%; height: 1040px; }
+}
+
+.tools.working > * { pointer-events: none; }

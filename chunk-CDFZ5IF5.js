@@ -1,0 +1,1 @@
+function r(e){if(e[0]===255&&e[1]===254)return new TextDecoder("utf-16le").decode(e);if(e[0]===254&&e[1]===255)return new TextDecoder("utf-16be").decode(e);try{return new TextDecoder("utf-8",{fatal:!0}).decode(e)}catch{return new TextDecoder("euc-kr").decode(e)}}export{r as a};
