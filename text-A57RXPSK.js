@@ -1,0 +1,8 @@
+import{a as x}from"./chunk-Z4VM6G2G.js";import{a as g}from"./chunk-BM7IVJBA.js";import{a as l}from"./chunk-AYNTO6YH.js";import"./chunk-Y6URMNV2.js";var b=1e6,D=new Set(["fonttbl","colortbl","stylesheet","info","pict","object","themedata","datastore","listtable","listoverridetable","generator","revtbl","rsidtbl","latentstyles","filetbl"]),S={par:`
+`,line:`
+`,sect:`
+
+`,page:`
+
+`,row:`
+`,tab:"	",cell:"	"},T=/\\([a-z]+)(-?\d+)? ?|\\'([0-9a-f]{2})|\\([^a-z])|([{}])|([^\\{}\r\n]+)|[\r\n]+/gi;function y(o){let n=/\\ansicpg(\d+)/.exec(o)?.[1]??"949";try{return new TextDecoder(n==="949"?"euc-kr":`windows-${n}`)}catch{return new TextDecoder("euc-kr")}}function E(o){let n=new TextDecoder("latin1").decode(o),p=y(n),t="",s=[],r=()=>{s.length&&(t+=p.decode(new Uint8Array(s))),s=[]},e={skip:!1,unicodeSkip:1},d=[],i=0,f=!1;for(let[,c,m,h,a,k,u]of n.matchAll(T)){if(k){r(),k==="{"?(d.push(e),e={...e},f=!0):e=d.pop()??e;continue}let w=f;if(f=!1,h){i>0?i--:e.skip||s.push(parseInt(h,16));continue}if(r(),c)c==="uc"?e.unicodeSkip=Number(m??1):c==="u"?(e.skip||(t+=String.fromCharCode((Number(m)+65536)%65536)),i=e.unicodeSkip):w&&D.has(c)?e.skip=!0:!e.skip&&S[c]&&(t+=S[c]);else if(a==="*")e.skip=!0;else if(a&&!e.skip)t+=a==="~"?" ":/[\\{}]/.test(a)?a:"";else if(u){let A=u.slice(i);i=Math.max(0,i-u.length),e.skip||(t+=A)}}return r(),t.trim()}async function C(o,n,{ext:p,partial:t}){let s=p==="rtf"?E(o):x(o),r=t||s.length>b;return n.append(l("div",{class:"doc-pages"},l("article",{class:"text-sheet"},p==="rtf"?l("p",{class:"text-note"},"서식 없이 글자만 보여 드려요"):"",r?l("p",{class:"text-note"},"긴 파일이라 앞부분만 보여 드려요"):"",l("pre",{},r?s.slice(0,b):s)))),{meta:r?"일부만 표시":"",print:{pageCss:g}}}export{C as render,E as rtfText};
